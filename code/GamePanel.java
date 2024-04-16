@@ -1,6 +1,9 @@
 import javax.swing.JPanel;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
@@ -23,32 +26,36 @@ public class GamePanel extends JPanel
 	private BufferedImage image;
  	//private Image backgroundImage;
 
-	private Background background;
-
-	private ImageFX imageFX;
-	private ImageFX imageFX2;
-
+	// private Background background;
+	private HashMap<String, Background> backgrounds;
+	private MainCharacter mc;
+	private ArrayList<Obstacles> obstacles;
+	private ArrayList<PowerUps> powerUps;
+	private Random random;
 
 	public GamePanel () {
 		
 		isRunning = false;
 		isPaused = false;
 		soundManager = SoundManager.getInstance();
+		random = new Random();
 
-		//backgroundImage = ImageManager.loadImage ("images/Background.jpg");
-
-		image = new BufferedImage (400, 400, BufferedImage.TYPE_INT_RGB);
+		image = new BufferedImage (400, 400, BufferedImage.TYPE_INT_RGB);  // this is the screen
 	}
 
 
 	public void createGameEntities() {
 
-		background = new Background(this, "images/Scroll-Background.png", 96);
-
-		
+		// background = new Background(this, "images/Scroll-Background.png", 96);
+		backgrounds = new HashMap<>();
+		obstacles = new ArrayList<>();
+		powerUps = new ArrayList<>();
+		loadBackGrounds();
+		mc = new MainCharacter(this);
+		for (int i = 1; i <= 3; i++) {
+			obstacles.add(new Laser(random.nextInt(0, 400), mc, this));
+		}
 	
-
-		imageFX2 = new GrayScaleFX2 (this);
 
 	}
 
@@ -79,7 +86,14 @@ public class GamePanel extends JPanel
 		animation.update();
 		animation2.update();
 		animation3.update();
-*/
+*/		Background test = backgrounds.get("level1");
+		test.move(1);
+		
+		if(mc != null) mc.update();
+
+		for (Obstacles ob : obstacles) {
+			ob.update();
+		}
 	}
 
 
@@ -88,9 +102,9 @@ public class GamePanel extends JPanel
 		if (isPaused)
 			return;
 
-		if (background != null) {
-			background.move(direction);
-		}
+		// if (background != null) {
+		// 	background.move(direction);
+		// }
 
 		// if (bat != null) {
 		// 	bat.move(direction);
@@ -105,9 +119,14 @@ public class GamePanel extends JPanel
 
 		Graphics2D imageContext = (Graphics2D) image.getGraphics();
 
-		background.draw(imageContext);
-
-		//imageContext.drawImage(backgroundImage, 0, 0, null);	// draw the background image
+		// background.draw(imageContext);
+		Background test = backgrounds.get("level1");
+		test.draw(imageContext);
+		
+		if(mc != null) mc.draw(imageContext);
+		for (Obstacles ob : obstacles) {
+			ob.draw();
+		}
 
 		Graphics2D g2 = (Graphics2D) getGraphics();	// get the graphics context for the panel
 		g2.drawImage(image, 0, 0, 400, 400, null);
@@ -125,14 +144,16 @@ public class GamePanel extends JPanel
 			gameThread = new Thread (this);			
 			gameThread.start();
 
-			
+			if(mc != null){
+				mc.start();
+			}
 		}
 
 	}
 
 
 	public void startNewGame() {				// initialise and start a new game thread 
-
+		
 		isPaused = false;
 
 		if (gameThread == null || !isRunning) {
@@ -161,11 +182,14 @@ public class GamePanel extends JPanel
 		//soundManager.stopClip ("background");
 	}
 
-
-	
-
-
 	// public boolean isOnBat (int x, int y) {
 	// 	return bat.isOnBat(x, y);
 	// }
+
+
+	private void loadBackGrounds(){
+		// load all backgrounds into hashmap
+		Background b1 = new Background(this, "images/backgrounds/background.png", 5);
+		backgrounds.put("level1", b1);
+	}
 }

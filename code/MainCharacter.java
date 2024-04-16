@@ -26,6 +26,12 @@ public class MainCharacter extends Character{
         health = 20;
         this.panel = panel;
         this.sm = SoundManager.getInstance();
+        isDead = false;
+        damageable = false;
+        doubleCoins = false;
+        isOnGround = true;
+        coins = 0;
+        lives = 20;
     }
 
     public void start(){

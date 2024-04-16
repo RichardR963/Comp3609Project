@@ -14,4 +14,8 @@ public abstract class Obstacles extends GameObjects{
         return myRect.intersects(mcRect); 
     }
 
+    public void draw(){
+        
+    }
+
 }

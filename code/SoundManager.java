@@ -22,6 +22,9 @@ public class SoundManager {				// a Singleton class
 		clip = loadClip("sounds/appearSound.wav");	// played when an alien is regenerated at the top of the JPanel
 		clips.put("appear", clip);
 
+
+		// add sounds for all the other entities, powerups and obstacles
+		
 		volume = 1.0f;
 	}
 
